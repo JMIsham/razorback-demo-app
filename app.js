@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    const command = "xo create game --username jack --url http://rest-api:8008"
+    const command = "xo create game --username jack "
     //to do: extract poNumber from request.
     //const poNumber = req.***;
     //const command = `po-cli po show ${poNumber}`;
@@ -77,24 +77,27 @@ function execute(command) {
                 // let response = null;
                 let responseLink = extractLink(stdout);
                 if (responseLink != null) {
-                    console.log("responseLink", responseLink);
                     resolve(responseLink);
                 } else {
                     reject("Not a correct Response");
                 }
             }
-            if (err) {
-                console.log("err", err);
-                reject(err);
-            }
             if (stderr) {
                 console.log("stderr", stderr);
                 reject(stderr);
+            }
+            if (err) {
+                console.log("err", err);
+                reject(err);
             }
         });
     });
 }
 
+/**
+ * extract http link from the given string
+ * @param {*} str 
+ */
 function extractLink(str) {
     const regex = /\"http(.*?)\"/;
     if (str && str.length !== 0) {
