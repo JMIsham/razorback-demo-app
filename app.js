@@ -7,6 +7,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
+    //to do
     res.status(200).send({
       success: 'true',
       message: 'pos retrieved successfully',
