@@ -1,0 +1,37 @@
+syntax = "proto3";
+import "po.proto";
+
+message POPayload {
+    enum Action {
+        ACTION_UNSET = 0;
+        CREATE_PO = 1;
+        SHIP_PO = 2;
+    }
+    Action action = 1;
+    CreatePO create_po = 2;
+    ShipPO ship_po = 3;
+    
+}
+
+message CreatePO {
+
+    string poNumber =1;
+    string orderDate =2;
+    repeated Item items =3;
+}
+
+message ShipPO {
+
+    string poNumber = 1;
+    string date =2;
+
+}
+
+
+message Item
+{
+   
+    string gtin =1;
+    int32 quantityReceived =2;
+
+}
