@@ -6,7 +6,7 @@
 ## Create po curl request
 ```
 curl -X POST \
-  http://localhost:5000/api/ship-po \
+  http://localhost:5000/api/create-po \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
   -d '{
@@ -21,3 +21,16 @@ curl -X POST \
     }]
 }'
 ```
+
+## Ship Po curl request
+
+```
+curl -X POST \
+  http://localhost:5000/api/ship-po \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+	"poNumber" : "po-v1-12"
+}'
+```
+
