@@ -10,8 +10,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    //to do
     const command = "xo create game --username jack --url http://rest-api:8008"
+    //to do: extract poNumber from request.
+    //const poNumber = req.***;
+    //const command = `po-cli po show ${poNumber}`;
     execute(command).then((link) => {
         axios.get(link).then((response) => {
             res.status(200).send(response.data);
@@ -31,26 +33,30 @@ app.get('/api/po', (req, res) => {
 app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
-    const command = "xo create game --username jack --url http://rest-api:8008"
+    const command = `~/sabre-cli/sabre exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
     execute(command).then((resolve) => {
 
     });
-    return res.status(201).send({
-        success: 'true',
-        message: 'po added successfully',
-        data: req.body
-    })
+    // return res.status(201).send({
+    //     success: 'true',
+    //     message: 'po added successfully',
+    //     data: req.body
+    // })
 
 });
 
 app.post('/api/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
-    return res.status(201).send({
-        success: 'true',
-        message: 'po added successfully',
-        data: req.body
-    })
+    const command = `~/sabre-cli/sabre exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
+    execute(command).then((resolve) => {
+
+    });
+    // return res.status(201).send({
+    //     success: 'true',
+    //     message: 'po added successfully',
+    //     data: req.body
+    // })
 
 });
 
@@ -68,12 +74,10 @@ function execute(command) {
     return new Promise((resolve, reject) => {
         exec(command, (err, stdout, stderr) => {
             if (stdout) {
-                let response = null;
-                let responseLink = null;
-                // handle response with keyword 'Response'
-                if (stdout.indexOf("Response:") !== -1) {
-                    response = stdout.split("Response:")[1];
-                    responseLink = JSON.parse(response).link;
+                // let response = null;
+                let responseLink = extractLink(stdout);
+                if (responseLink != null) {
+                    console.log("responseLink", responseLink);
                     resolve(responseLink);
                 } else {
                     reject("Not a correct Response");
@@ -89,4 +93,12 @@ function execute(command) {
             }
         });
     });
+}
+
+function extractLink(str) {
+    const regex = /\"http(.*?)\"/;
+    if (str && str.length !== 0) {
+        return 'http'+str.match(regex)[1];
+    }
+    return null;
 }
