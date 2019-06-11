@@ -1,48 +1,114 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {createPoPayload, shipPayload} from './writePayload';
+import { exec } from 'child_process';
+import Promise from 'promise';
+import axios from 'axios';
+import {PO_CLI, SABRE_CLI, EXEC_COMMAND} from './constants'
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    //to do
-    res.status(200).send({
-      success: 'true',
-      message: 'pos retrieved successfully',
-      pos: "test"
-    })
+    const command = PO_CLI+" po show "+req.query.po
+    exec(command, (err, stdout, stderr) => {
+        if (stdout) {
+            res.status(200).send({
+                success: 'true',
+                message: 'Purchase Order '+req.query.po+' retrieved successfully',
+                pos: stdout
+            })           
+        }
+        if (stderr) {
+            res.status(500).send({
+                success: 'false',
+                message: 'Purchase Order '+req.query.po+' retrieved failed',
+                pos: stderr
+            })    
+        }
+        if (err) {
+            res.status(500).send({
+                success: 'false',
+                message: 'Purchase Order '+req.query.po+' retrieved failed',
+                pos: err
+            })  
+        }
+    });
 });
 
 app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
-    return res.status(201).send({
-        success: 'true',
-        message: 'po added successfully',
-        data: req.body
-    })
-
+    const command = SABRE_CLI+EXEC_COMMAND
+    execute(command).then((link) => {
+        axios.get(link).then((response) => {
+            res.status(200).send(response.data);
+        }).catch((err) => {
+            res.status(500).send(err);
+        });
+    }).catch((error) => {
+        res.status(500).send(error);
+    });
 });
 
 app.post('/api/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
-    return res.status(201).send({
-        success: 'true',
-        message: 'po added successfully',
-        data: req.body
-    })
-
+    const command = SABRE_CLI+EXEC_COMMAND
+    execute(command).then((link) => {
+        axios.get(link).then((response) => {
+            res.status(200).send(response.data);
+        }).catch((err) => {
+            res.status(500).send(err);
+        });
+    }).catch((error) => {
+        res.status(500).send(error);
+    });
 });
 
-
-
-const PORT = 5000;
+const PORT = 5001;
   
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
 });
 
+/**
+ * run the command line and return a promise that includes the status link
+ * @param {*} command command line to be executed
+ */
+function execute(command) {
+    return new Promise((resolve, reject) => {
+        exec(command, (err, stdout, stderr) => {
+            if (stdout) {
+                // let response = null;
+                let responseLink = extractLink(stdout);
+                if (responseLink != null) {
+                    resolve(responseLink);
+                } else {
+                    reject("Did not get a link from sawtooth-rest-api");
+                }
+            }
+            if (stderr) {
+                console.log("stderr", stderr);
+                reject(stderr);
+            }
+            if (err) {
+                console.log("err", err);
+                reject(err);
+            }
+        });
+    });
+}
 
+/**
+ * extract http link from the given string
+ * @param {*} str 
+ */
+function extractLink(str) {
+    const regex = /\"http(.*?)\"/;
+    if (str && str.length !== 0) {
+        return 'http'+str.match(regex)[1];
+    }
+    return null;
+}
