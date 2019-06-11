@@ -40,7 +40,7 @@ app.get('/api/po', (req, res) => {
 app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
-    const command = `~/sabre-cli/sabre exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
+    const command = SABRE_CLI+` exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
     execute(command).then((link) => {
         axios.get(link).then((response) => {
             res.status(200).send(response.data);
@@ -50,27 +50,21 @@ app.post('/api/create-po', (req, res) => {
     }).catch((error) => {
         res.status(500).send(error);
     });
-    // return res.status(201).send({
-    //     success: 'true',
-    //     message: 'po added successfully',
-    //     data: req.body
-    // })
-
 });
 
 app.post('/api/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
-    const command = `~/sabre-cli/sabre exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
-    execute(command).then((resolve) => {
-
+    const command = SABRE_CLI+` exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
+    execute(command).then((link) => {
+        axios.get(link).then((response) => {
+            res.status(200).send(response.data);
+        }).catch((err) => {
+            res.status(500).send(err);
+        });
+    }).catch((error) => {
+        res.status(500).send(error);
     });
-    // return res.status(201).send({
-    //     success: 'true',
-    //     message: 'po added successfully',
-    //     data: req.body
-    // })
-
 });
 
 const PORT = 5001;
