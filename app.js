@@ -10,18 +10,42 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    const command = "xo create game --username jack "
+    const command = "xo list"
     //to do: extract poNumber from request.
     //const poNumber = req.***;
     //const command = `po-cli po show ${poNumber}`;
-    execute(command).then((link) => {
-        axios.get(link).then((response) => {
-            res.status(200).send(response.data);
-        }).catch((err) => {
-            res.status(500).send(err);
-        });
-    }).catch((error) => {
-        res.status(500).send(error);
+    // execute(command).then((link) => {
+    //     axios.get(link).then((response) => {
+    //         res.status(200).send(response.data);
+    //     }).catch((err) => {
+    //         res.status(500).send(err);
+    //     });
+    // }).catch((error) => {
+    //     res.status(500).send(error);
+    // });
+
+    exec(command, (err, stdout, stderr) => {
+        if (stdout) {
+            res.status(200).send({
+                success: 'true',
+                message: 'pos retrieved successfully',
+                pos: stdout
+            })           
+        }
+        if (stderr) {
+            res.status(500).send({
+                success: 'true',
+                message: 'pos retrieved failed',
+                pos: stderr
+            })    
+        }
+        if (err) {
+            res.status(500).send({
+                success: 'true',
+                message: 'pos retrieved failed',
+                pos: err
+            })  
+        }
     });
     // res.status(200).send({
     //   success: 'true',
@@ -34,8 +58,14 @@ app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
     const command = `~/sabre-cli/sabre exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
-    execute(command).then((resolve) => {
-
+    execute(command).then((link) => {
+        axios.get(link).then((response) => {
+            res.status(200).send(response.data);
+        }).catch((err) => {
+            res.status(500).send(err);
+        });
+    }).catch((error) => {
+        res.status(500).send(error);
     });
     // return res.status(201).send({
     //     success: 'true',
@@ -60,7 +90,7 @@ app.post('/api/ship-po', (req, res) => {
 
 });
 
-const PORT = 5000;
+const PORT = 5001;
   
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
