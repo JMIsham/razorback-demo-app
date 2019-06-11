@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    const command = "xo list"
+    const command = "razorback-sabre-contract/po/cli/target/debug/po-cli po show po-v1-1234"
     //to do: extract poNumber from request.
     //const poNumber = req.***;
     //const command = `po-cli po show ${poNumber}`;
