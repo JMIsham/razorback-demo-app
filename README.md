@@ -41,6 +41,6 @@ curl -X POST \
 ## View Purchase Order curl request
 ```
 curl -X GET \
-  'http://10.133.96.102:5001/api/po?po=po-v1-13' \
+  'http://10.133.96.102:5001/api/po?po=po-v1-12' \
   -H 'cache-control: no-cache' 
   ```
