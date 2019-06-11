@@ -4,26 +4,14 @@ import {createPoPayload, shipPayload} from './writePayload';
 import { exec } from 'child_process';
 import Promise from 'promise';
 import axios from 'axios';
+import {PO_CLI, SABRE_CLI} from './constants'
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    const command = "razorback-sabre-contract/po/cli/target/debug/po-cli po show po-v1-1234"
-    //to do: extract poNumber from request.
-    //const poNumber = req.***;
-    //const command = `po-cli po show ${poNumber}`;
-    // execute(command).then((link) => {
-    //     axios.get(link).then((response) => {
-    //         res.status(200).send(response.data);
-    //     }).catch((err) => {
-    //         res.status(500).send(err);
-    //     });
-    // }).catch((error) => {
-    //     res.status(500).send(error);
-    // });
-
+    const command = PO_CLI+" po show "+req.query.po
     exec(command, (err, stdout, stderr) => {
         if (stdout) {
             res.status(200).send({
@@ -47,11 +35,6 @@ app.get('/api/po', (req, res) => {
             })  
         }
     });
-    // res.status(200).send({
-    //   success: 'true',
-    //   message: 'pos retrieved successfully',
-    //   pos: "test"
-    // })
 });
 
 app.post('/api/create-po', (req, res) => {
