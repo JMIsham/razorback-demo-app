@@ -4,7 +4,7 @@ import {createPoPayload, shipPayload} from './writePayload';
 import { exec } from 'child_process';
 import Promise from 'promise';
 import axios from 'axios';
-import {PO_CLI, SABRE_CLI} from './constants'
+import {PO_CLI, SABRE_CLI, EXEC_COMMAND} from './constants'
 
 const app = express();
 app.use(bodyParser.json());
@@ -16,21 +16,21 @@ app.get('/api/po', (req, res) => {
         if (stdout) {
             res.status(200).send({
                 success: 'true',
-                message: 'pos retrieved successfully',
+                message: 'Purchase Order '+req.query.po+' retrieved successfully',
                 pos: stdout
             })           
         }
         if (stderr) {
             res.status(500).send({
-                success: 'true',
-                message: 'pos retrieved failed',
+                success: 'false',
+                message: 'Purchase Order '+req.query.po+' retrieved failed',
                 pos: stderr
             })    
         }
         if (err) {
             res.status(500).send({
-                success: 'true',
-                message: 'pos retrieved failed',
+                success: 'false',
+                message: 'Purchase Order '+req.query.po+' retrieved failed',
                 pos: err
             })  
         }
@@ -40,7 +40,7 @@ app.get('/api/po', (req, res) => {
 app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
-    const command = SABRE_CLI+` exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
+    const command = SABRE_CLI+EXEC_COMMAND
     execute(command).then((link) => {
         axios.get(link).then((response) => {
             res.status(200).send(response.data);
@@ -55,7 +55,7 @@ app.post('/api/create-po', (req, res) => {
 app.post('/api/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
-    const command = SABRE_CLI+` exec --contract purchase-order:1.0 --payload payload --inputs  000008 --outputs  000008 --url http://127.0.0.1:8008`
+    const command = SABRE_CLI+EXEC_COMMAND
     execute(command).then((link) => {
         axios.get(link).then((response) => {
             res.status(200).send(response.data);
@@ -86,7 +86,7 @@ function execute(command) {
                 if (responseLink != null) {
                     resolve(responseLink);
                 } else {
-                    reject("Not a correct Response");
+                    reject("Did not get a link from sawtooth-rest-api");
                 }
             }
             if (stderr) {
