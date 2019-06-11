@@ -8,7 +8,7 @@
 
 `npm run start`
 
-## Create po curl request
+## Create Purchase Order curl request
 ```
 curl -X POST \
   http://localhost:5000/api/create-po \
@@ -27,7 +27,7 @@ curl -X POST \
 }'
 ```
 
-## Ship Po curl request
+## Ship Purhcase Order curl request
 
 ```
 curl -X POST \
@@ -38,4 +38,9 @@ curl -X POST \
 	"poNumber" : "po-v1-12"
 }'
 ```
-
+## View Purchase Order curl request
+```
+curl -X GET \
+  'http://10.133.96.102:5001/api/po?po=po-v1-13' \
+  -H 'cache-control: no-cache' 
+  ```
