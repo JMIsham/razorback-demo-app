@@ -1,6 +1,6 @@
 # razorback-demo-app
 
-#### Update the correct paths for sabre-cli and po-cli binaries from constants.js
+#### Update the correct paths for sabre-cli and po-cli binaries in constants.js
 
 ## Start the server
 
