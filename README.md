@@ -1,4 +1,9 @@
 # razorback-demo-app
+
+#### Update the correct paths for sabre-cli and po-cli binaries from constants.js
+
+## Start the server
+
 `npm install`
 
 `npm run start`
