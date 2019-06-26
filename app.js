@@ -49,6 +49,7 @@ app.post('/api/create-po', (req, res) => {
     // }).catch((error) => {
     //     res.status(500).send(error);
     // });
+    res.status(200).send("payload created");
 });
 
 app.post('/api/ship-po', (req, res) => {
@@ -64,6 +65,7 @@ app.post('/api/ship-po', (req, res) => {
     // }).catch((error) => {
     //     res.status(500).send(error);
     // });
+    res.status(200).send("payload created");
 });
 
 const PORT = 5001;
