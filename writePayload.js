@@ -1,5 +1,7 @@
 import  protobuf from 'protocol-buffers';
 import  fs  from 'fs';
+import {PAYLOAD_PATH} from './constants'
+
 
 export const createPoPayload = (poNumber ,items ) => {
     var messages = protobuf(fs.readFileSync('./protos/payload.proto'))
@@ -12,7 +14,8 @@ export const createPoPayload = (poNumber ,items ) => {
             items : items
         }
     })
-    fs.writeFile("payload", buf);
+    console.log(buf)
+    fs.writeFile(PAYLOAD_PATH, buf);
 }
 
 export const shipPayload = (poNumber) => {
@@ -25,6 +28,7 @@ export const shipPayload = (poNumber) => {
             date :today,
         }
     })
-    fs.writeFile("payload", buf);
+    console.log(buf)
+    fs.writeFile(PAYLOAD_PATH, buf);
 }
 

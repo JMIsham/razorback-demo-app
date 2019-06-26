@@ -5,66 +5,67 @@ import { exec } from 'child_process';
 import Promise from 'promise';
 import axios from 'axios';
 import {PO_CLI, SABRE_CLI, EXEC_COMMAND} from './constants'
+import fs from 'fs';
+import {sha512}from 'js-sha512';
+import protobuf from 'protocol-buffers';
+import {Base64} from 'js-base64'
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get('/api/po', (req, res) => {
-    const command = PO_CLI+" po show "+req.query.po
-    exec(command, (err, stdout, stderr) => {
-        if (stdout) {
-            res.status(200).send({
-                success: 'true',
-                message: 'Purchase Order '+req.query.po+' retrieved successfully',
-                pos: stdout
-            })           
-        }
-        if (stderr) {
-            res.status(500).send({
-                success: 'false',
-                message: 'Purchase Order '+req.query.po+' retrieved failed',
-                pos: stderr
-            })    
-        }
-        if (err) {
-            res.status(500).send({
-                success: 'false',
-                message: 'Purchase Order '+req.query.po+' retrieved failed',
-                pos: err
-            })  
-        }
+    var po = req.query.po;
+    var address = "000008" + sha512(po).substring(0,64)
+    axios.get("http://127.0.0.1:8008/state/"+address).then((response) => {
+
+        var data = response.data.data
+        var decoded = Base64.decode(data)
+        var str = decoded;
+        var buffer = new Buffer(str);
+        console.log(buffer)
+        var messages = protobuf(fs.readFileSync('./protos/po.proto'));
+        var obj = messages.POList.decode(buffer)
+        console.log(obj.purchaseOrders[0])
+        res.status(200).send(obj);
+
+    }).catch((err) => {
+        res.status(500).send(error);
     });
+
+    
 });
 
 app.post('/api/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
-    const command = SABRE_CLI+EXEC_COMMAND
-    execute(command).then((link) => {
-        axios.get(link).then((response) => {
-            res.status(200).send(response.data);
-        }).catch((err) => {
-            res.status(500).send(err);
-        });
-    }).catch((error) => {
-        res.status(500).send(error);
-    });
+    // const command = SABRE_CLI+EXEC_COMMAND
+    // execute(command).then((link) => {
+    //     axios.get(link).then((response) => {
+    //         res.status(200).send(response.data);
+    //     }).catch((err) => {
+    //         res.status(500).send(err);
+    //     });
+    // }).catch((error) => {
+    //     res.status(500).send(error);
+    // });
+    res.status(200).send("payload created");
 });
 
 app.post('/api/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
-    const command = SABRE_CLI+EXEC_COMMAND
-    execute(command).then((link) => {
-        axios.get(link).then((response) => {
-            res.status(200).send(response.data);
-        }).catch((err) => {
-            res.status(500).send(err);
-        });
-    }).catch((error) => {
-        res.status(500).send(error);
-    });
+    // const command = SABRE_CLI+EXEC_COMMAND
+    // execute(command).then((link) => {
+    //     axios.get(link).then((response) => {
+    //         res.status(200).send(response.data);
+    //     }).catch((err) => {
+    //         res.status(500).send(err);
+    //     });
+    // }).catch((error) => {
+    //     res.status(500).send(error);
+    // });
+    res.status(200).send("payload created");
 });
 
 const PORT = 5001;
