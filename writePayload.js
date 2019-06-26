@@ -12,7 +12,8 @@ export const createPoPayload = (poNumber ,items ) => {
             items : items
         }
     })
-    fs.writeFile("payload", buf);
+    console.log(buf)
+    fs.writeFile("/root/payload/payload", buf);
 }
 
 export const shipPayload = (poNumber) => {
@@ -25,6 +26,7 @@ export const shipPayload = (poNumber) => {
             date :today,
         }
     })
-    fs.writeFile("payload", buf);
+    console.log(buf)
+    fs.writeFile("/root/payload/payload", buf);
 }
 
