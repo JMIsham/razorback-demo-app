@@ -18,7 +18,9 @@
     "js-base64": "^2.5.1",
     "js-sha512": "^0.8.0",
     "promise": "^8.0.3",
-    "protocol-buffers": "^4.1.0"
+    "protocol-buffers": "^4.1.0",
+    "request": "^2.88.0",
+    "requst": "0.0.1-security"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
