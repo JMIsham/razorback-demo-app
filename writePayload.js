@@ -15,7 +15,7 @@ export const createPoPayload = (poNumber ,items ) => {
         }
     })
     console.log(buf)
-    fs.writeFile(PAYLOAD_PATH, buf);
+    fs.writeFileSync(PAYLOAD_PATH, buf);
 }
 
 export const shipPayload = (poNumber) => {
@@ -29,6 +29,6 @@ export const shipPayload = (poNumber) => {
         }
     })
     console.log(buf)
-    fs.writeFile(PAYLOAD_PATH, buf);
+    fs.writeFileSync(PAYLOAD_PATH, buf);
 }
 
