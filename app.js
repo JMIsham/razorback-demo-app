@@ -8,6 +8,7 @@ import {sha512}from 'js-sha512';
 import protobuf from 'protocol-buffers';
 import {Base64} from 'js-base64'
 import request from 'request';
+import {SABRE_CLI_API, SAWTOOTH_REST_API} from './constants'
 
 const app = express();
 app.use(bodyParser.json());
@@ -16,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.get('/api/po', (req, res) => {
     var po = req.query.po;
     var address = "000008" + sha512(po).substring(0,64)
-    axios.get("http://127.0.0.1:8008/state/"+address).then((response) => {
+    axios.get(SAWTOOTH_REST_API+"/state/"+address).then((response) => {
         var data = response.data.data
         var decoded = Base64.decode(data)
         var str = decoded;
@@ -34,7 +35,7 @@ app.get('/api/po', (req, res) => {
     
 });
 
-app.post('/api/create-po', (req, res) => {
+app.post('/api/sabre/create-po', (req, res) => {
     console.log(req.body.items);
     createPoPayload(req.body.poNumber, req.body.items)
     sabreExec().then(function( response) {
@@ -44,7 +45,7 @@ app.post('/api/create-po', (req, res) => {
     })
 });
 
-app.post('/api/ship-po', (req, res) => {
+app.post('/api/sabre/ship-po', (req, res) => {
     console.log(req.body.poNumber);
     shipPayload(req.body.poNumber)
     sabreExec().then(function( response) {
@@ -61,49 +62,9 @@ app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
 });
 
-/**
- * run the command line and return a promise that includes the status link
- * @param {*} command command line to be executed
- */
-// function execute(command) {
-//     return new Promise((resolve, reject) => {
-//         exec(command, (err, stdout, stderr) => {
-//             if (stdout) {
-//                 // let response = null;
-//                 let responseLink = extractLink(stdout);
-//                 if (responseLink != null) {
-//                     resolve(responseLink);
-//                 } else {
-//                     reject("Did not get a link from sawtooth-rest-api");
-//                 }
-//             }
-//             if (stderr) {
-//                 console.log("stderr", stderr);
-//                 reject(stderr);
-//             }
-//             if (err) {
-//                 console.log("err", err);
-//                 reject(err);
-//             }
-//         });
-//     });
-// }
-
-/**
- * extract http link from the given string
- * @param {*} str 
- */
-function extractLink(str) {
-    const regex = /\"http(.*?)\"/;
-    if (str && str.length !== 0) {
-        return 'http'+str.match(regex)[1];
-    }
-    return null;
-}
-
 function sabreExec () {
     var options = { method: 'POST',
-    url: 'http://127.0.0.1:5002/sabre/exec',
+    url: SABRE_CLI_API + '/sabre/exec',
     headers: 
     { 'postman-token': '09f85679-20c5-d410-e6a9-e006f78b667b',
         'cache-control': 'no-cache',
@@ -119,5 +80,4 @@ function sabreExec () {
             resolve(body);
         });
     })
-    
 }
