@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {createPoPayload, shipPayload} from './writePayload';
+import {writeCreatePoPayload, writeShipPayload} from './writePayload';
+import {submitCreatePO, submitShipPO} from './submitPayload'
 import Promise from 'promise';
 import axios from 'axios';
 import fs from 'fs';
@@ -37,7 +38,7 @@ app.get('/api/po', (req, res) => {
 
 app.post('/api/sabre/create-po', (req, res) => {
     console.log(req.body.items);
-    createPoPayload(req.body.poNumber, req.body.items)
+    writeCreatePoPayload(req.body.poNumber, req.body.items)
     sabreExec().then(function( response) {
         res.status(200).send(response);
     }, function (error) {
@@ -47,8 +48,29 @@ app.post('/api/sabre/create-po', (req, res) => {
 
 app.post('/api/sabre/ship-po', (req, res) => {
     console.log(req.body.poNumber);
-    shipPayload(req.body.poNumber)
+    writeShipPayload(req.body.poNumber)
     sabreExec().then(function( response) {
+        res.status(200).send(response);
+    }, function (error) {
+        res.status(500).send(error);
+    })
+    
+});
+
+app.post('/api/sawtooth/create-po', (req, res) => {
+    console.log(req.body.items);
+    submitCreatePO(req.body.poNumber, req.body.items)
+    .then(function( response) {
+        res.status(200).send(response);
+    }, function (error) {
+        res.status(500).send(error);
+    })
+});
+
+app.post('/api/sawtooth/ship-po', (req, res) => {
+    console.log(req.body.poNumber);
+    submitShipPO(req.body.poNumber)
+    .then(function( response) {
         res.status(200).send(response);
     }, function (error) {
         res.status(500).send(error);
