@@ -9,7 +9,7 @@ import {sha512}from 'js-sha512';
 import protobuf from 'protocol-buffers';
 import {Base64} from 'js-base64'
 import request from 'request';
-import {SABRE_CLI_API, SAWTOOTH_REST_API} from './constants'
+import {SABRE_CLI_API, SAWTOOTH_REST_API, APPLICATION_PORT} from './constants'
 
 const app = express();
 app.use(bodyParser.json());
@@ -78,7 +78,7 @@ app.post('/api/sawtooth/ship-po', (req, res) => {
     
 });
 
-const PORT = 5001;
+const PORT = APPLICATION_PORT;
   
 app.listen(PORT, () => {
     console.log(`server running on port ${PORT}`)
