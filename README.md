@@ -1,9 +1,14 @@
 # razorback-demo-app
+
+#### Update the correct paths for sabre-cli and po-cli binaries in constants.js
+
+## Start the server
+
 `npm install`
 
 `npm run start`
 
-## Create po curl request
+## Create Purchase Order curl request
 ```
 curl -X POST \
   http://localhost:5000/api/sabre/create-po \
@@ -22,7 +27,7 @@ curl -X POST \
 }'
 ```
 
-## Ship Po curl request
+## Ship Purhcase Order curl request
 
 ```
 curl -X POST \
