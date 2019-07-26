@@ -10,10 +10,12 @@ import protobuf from 'protocol-buffers';
 import {Base64} from 'js-base64'
 import request from 'request';
 import {SABRE_CLI_API, SAWTOOTH_REST_API, APPLICATION_PORT} from './constants'
+import cors from 'cors';
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors())
 
 app.get('/api/po', (req, res) => {
     var po = req.query.po;
