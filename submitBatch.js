@@ -18,8 +18,7 @@ const privateKey = context.newRandomPrivateKey();
 const cryptoFactory = new CryptoFactory(context);
 const signer = cryptoFactory.newSigner(privateKey);
 
-// eslint-disable-next-line import/prefer-default-export
-export const submitBatch = payloadBytes => {
+const submitBatch = payloadBytes => {
   // create transaction header
   const transactionHeaderBytes = protobuf.TransactionHeader.encode({
     familyName: 'purchase-order',
@@ -82,3 +81,5 @@ export const submitBatch = payloadBytes => {
     );
   });
 };
+
+export default submitBatch;
