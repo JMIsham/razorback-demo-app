@@ -2,9 +2,7 @@ import {
   createPoPayload,
   shipPoPayload
 } from './getPayload';
-import {
-  submitBatch
-} from './submitBatch';
+import submitBatch from './submitBatch';
 
 export const submitCreatePO = (poNumber, items) => {
   const buf = createPoPayload(poNumber, items);
