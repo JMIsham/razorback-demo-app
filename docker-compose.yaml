@@ -1,0 +1,16 @@
+version: '3.3'
+
+services:
+  po-circuit-1:
+    image: sawtooth/po-client:latest
+    container_name: po-circuit-1
+    ports:
+      - '5001:5001'
+    command: ./circuit1.sh
+
+  po-circuit-2:
+    image: sawtooth/po-client:latest
+    container_name: po-circuit-2
+    ports:
+      - '5002:5001'
+    command: ./circuit2.sh
